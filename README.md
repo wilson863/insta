@@ -1,36 +1,188 @@
-# Instagram Clone
+# InstaClone
 
-This is an Instagram clone built using HTML, CSS, JavaScript, and Bootstrap. The main focus of this project was to replicate the front-end design and functionality of the original Instagram website while making it responsive to different screen sizes.
+A full-stack Instagram-like social media app with working login, signup, posts, likes, comments, follows, and a personalized feed.
 
-# View
+## Features
 
-To view the Instagram clone, simply open 
-```ruby
-https://designtowebsite.github.io/instagram_clone/login
+- User registration and login (session-based auth)
+- Create posts with images and captions
+- Like and unlike posts
+- Comment on posts
+- Follow / unfollow users
+- Personalized home feed
+- Explore all posts
+- User profiles with stats (posts, followers, following)
+- Suggested users to follow
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React + Vite + TailwindCSS + shadcn/ui |
+| Backend | Node.js + Express 5 |
+| Database | PostgreSQL + Drizzle ORM |
+| Auth | Session cookies + bcryptjs |
+| Package manager | pnpm workspaces |
+| Language | TypeScript |
+
+## Getting Started (Local Development)
+
+### Prerequisites
+
+- Node.js 24+
+- pnpm (`npm install -g pnpm`)
+- PostgreSQL 14+
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/wilson863/insta.git
+cd insta
 ```
-# Screenshots
 
-![image](https://user-images.githubusercontent.com/74991230/232751341-87ecf3de-0ce7-4c09-9486-2ede34c837b3.png)
+### 2. Install dependencies
 
-![image](https://user-images.githubusercontent.com/74991230/232751566-b7b07a68-b7cc-4459-9e8d-7e9e2e2cb7e6.png)
+```bash
+pnpm install
+```
 
-![image](https://user-images.githubusercontent.com/74991230/232751724-5f9b60bf-a2f6-4e74-b837-dccdd9082eac.png)
+### 3. Set up environment variables
 
-![image](https://user-images.githubusercontent.com/74991230/232751821-ddf33ddc-cfae-4b9f-98b0-f6d25c07d4d5.png)
+```bash
+cp .env.example .env
+# Edit .env and fill in your DATABASE_URL and SESSION_SECRET
+```
 
-![image](https://user-images.githubusercontent.com/74991230/232751943-065dcfd8-e925-4d24-a63e-21695e3458bf.png)
+### 4. Set up the database
 
-![image](https://user-images.githubusercontent.com/74991230/232752075-75bed5c3-16b7-4eed-be76-7c78a3440b0d.png)
+```bash
+pnpm --filter @workspace/db run push
+```
 
-![image](https://user-images.githubusercontent.com/74991230/232752130-10822b94-1441-4bb8-9c41-a4bc9fb6e98c.png)
+### 5. Start the development servers
 
-![image](https://user-images.githubusercontent.com/74991230/232752215-eac73b57-432b-47a6-88cb-6845268dad6d.png)
+Open two terminals:
 
+**Terminal 1 — API Server:**
+```bash
+pnpm --filter @workspace/api-server run dev
+```
 
-# Technologies Used
+**Terminal 2 — Frontend:**
+```bash
+pnpm --filter @workspace/insta-app run dev
+```
 
-✳ HTML </br>
-✳ CSS  </br>
-✳ JavaScript  </br>
-✳ Bootstrap  </br>
+The app will be at `http://localhost:5173` (or whichever port Vite assigns).
 
+## Deployment Options
+
+### Option 1: Docker Compose (easiest)
+
+```bash
+# Set your secret key
+export SESSION_SECRET=your-very-long-random-secret
+
+docker-compose up --build -d
+```
+
+The app will be available at `http://localhost:8080`.
+
+### Option 2: Railway
+
+1. Push this repo to GitHub
+2. Go to [railway.app](https://railway.app) → New Project → Deploy from GitHub
+3. Add a PostgreSQL service
+4. Set environment variables: `DATABASE_URL`, `SESSION_SECRET`, `PORT=8080`
+5. Railway will auto-deploy on every push
+
+### Option 3: Render
+
+1. Push this repo to GitHub
+2. Go to [render.com](https://render.com) → New Web Service → Connect GitHub repo
+3. **Build command:** `pnpm install && pnpm --filter @workspace/api-server run build && pnpm --filter @workspace/insta-app run build`
+4. **Start command:** `node artifacts/api-server/dist/index.mjs`
+5. Add a PostgreSQL database from Render's dashboard
+6. Set env vars: `DATABASE_URL`, `SESSION_SECRET`, `NODE_ENV=production`, `PORT=8080`
+
+### Option 4: Self-hosted VPS (Ubuntu/Debian)
+
+```bash
+# Install Node.js 24, pnpm, PostgreSQL
+curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
+sudo apt-get install -y nodejs postgresql
+
+# Clone and install
+git clone https://github.com/wilson863/insta.git
+cd insta
+pnpm install
+
+# Set up env vars
+cp .env.example .env
+nano .env  # fill in your values
+
+# Push schema
+pnpm --filter @workspace/db run push
+
+# Build for production
+pnpm --filter @workspace/api-server run build
+pnpm --filter @workspace/insta-app run build
+
+# Start with PM2
+npm install -g pm2
+PORT=8080 SESSION_SECRET=your-secret DATABASE_URL=postgresql://... pm2 start artifacts/api-server/dist/index.mjs --name instaclone
+```
+
+## Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `DATABASE_URL` | Yes | PostgreSQL connection string |
+| `SESSION_SECRET` | Yes | Long random string to sign session cookies |
+| `PORT` | Yes | Port the API server listens on (default: 8080) |
+| `NODE_ENV` | No | `development` or `production` |
+
+Generate a secure `SESSION_SECRET`:
+```bash
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+```
+
+## API Reference
+
+All routes are prefixed with `/api`.
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/auth/register` | No | Register a new user |
+| POST | `/auth/login` | No | Log in |
+| POST | `/auth/logout` | No | Log out |
+| GET | `/auth/me` | Yes | Get current user |
+| GET | `/users/:username` | No | Get user profile |
+| POST | `/users/:username/follow` | Yes | Follow a user |
+| POST | `/users/:username/unfollow` | Yes | Unfollow a user |
+| GET | `/users/:username/posts` | No | Get user's posts |
+| GET | `/posts` | No | All posts (explore) |
+| POST | `/posts` | Yes | Create a post |
+| GET | `/posts/:id` | No | Get a post |
+| DELETE | `/posts/:id` | Yes | Delete own post |
+| POST | `/posts/:id/like` | Yes | Like a post |
+| POST | `/posts/:id/unlike` | Yes | Unlike a post |
+| GET | `/posts/:id/comments` | No | Get comments |
+| POST | `/posts/:id/comments` | Yes | Add a comment |
+| GET | `/feed` | Yes | Personalized feed |
+| GET | `/feed/suggested` | Yes | Suggested users |
+| GET | `/feed/stats` | Yes | Your stats |
+
+## Pushing to GitHub
+
+```bash
+# Set remote (replace with your repo URL)
+git remote add origin https://github.com/wilson863/insta.git
+
+# Push all code
+git add .
+git commit -m "Full-stack InstaClone with working auth, posts, feed"
+git push -u origin main
+```
+
+> **Important:** Never commit your `.env` file. It is listed in `.gitignore`.
