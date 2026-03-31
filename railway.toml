@@ -1,7 +1,8 @@
 [build]
-builder = "nixpacks"
+builder = "dockerfile"
+dockerfilePath = "Dockerfile"
 
 [deploy]
 startCommand = "pnpm --filter @workspace/db run push && node artifacts/api-server/dist/index.mjs"
-healthcheckPath = "/api/health"
+healthcheckPath = "/api/healthz"
 restartPolicyType = "on_failure"
