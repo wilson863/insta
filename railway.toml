@@ -1,9 +1,8 @@
 [build]
-  builder = "dockerfile"
-  dockerfilePath = "Dockerfile"
+builder = "dockerfile"
+dockerfilePath = "Dockerfile"
 
-  [deploy]
-  startCommand = "pnpm --filter @workspace/db run push && node artifacts/api-server/dist/index.mjs"
-  healthcheckPath = "/api/health"
-  restartPolicyType = "on_failure"
-  
+[deploy]
+startCommand = "pnpm --filter @workspace/db run push && node artifacts/api-server/dist/index.mjs"
+healthcheckPath = "/api/health"
+restartPolicyType = "on_failure"
