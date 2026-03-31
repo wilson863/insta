@@ -1,17 +1,18 @@
-FROM node:24-alpine
+# Use Debian-based Node (glibc) instead of Alpine (musl) to avoid rollup native binary issues
+FROM node:24-slim
 
 WORKDIR /app
 
-# Enable corepack for pnpm
+# Install corepack for pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# Copy workspace config files (including .npmrc so optional=true is respected)
+# Copy workspace config files
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml .npmrc ./
 
 # Copy all library packages
 COPY lib/ ./lib/
 
-# Copy all artifact packages (BOTH api-server and insta-app)
+# Copy ALL artifact packages
 COPY artifacts/api-server/ ./artifacts/api-server/
 COPY artifacts/insta-app/ ./artifacts/insta-app/
 
@@ -22,8 +23,8 @@ COPY tsconfig.json tsconfig.base.json ./
 # Create attached_assets dir (referenced by vite alias)
 RUN mkdir -p attached_assets
 
-# Install all dependencies (optional=true in .npmrc ensures native binaries are installed)
-RUN pnpm install --frozen-lockfile
+# Install all dependencies - no frozen-lockfile so native binaries install for current platform
+RUN pnpm install --no-frozen-lockfile
 
 # Build API server
 RUN pnpm --filter @workspace/api-server run build
