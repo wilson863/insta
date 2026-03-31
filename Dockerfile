@@ -1,4 +1,4 @@
-FROM node:24-alpine AS base
+FROM node:24-slim AS base
 RUN corepack enable && corepack prepare pnpm@latest --activate
 WORKDIR /app
 
@@ -13,22 +13,21 @@ COPY artifacts/api-server/ ./artifacts/api-server/
 COPY artifacts/insta-app/ ./artifacts/insta-app/
 COPY scripts/ ./scripts/
 
-# Install all dependencies (including optional native binaries)
-RUN pnpm install --frozen-lockfile
+# Install all dependencies (including optional native binaries for current platform)
+RUN pnpm install --no-frozen-lockfile
 
 # Build API server
 RUN pnpm --filter @workspace/api-server run build
 
-# Build frontend (BASE_PATH=/ for root deployment)
-RUN BASE_PATH=/ pnpm --filter @workspace/insta-app run build
+# Build frontend
+RUN BASE_PATH=/ PORT=3000 pnpm --filter @workspace/insta-app run build
 
 # --- Production image ---
-FROM node:24-alpine AS production
+FROM node:24-slim AS production
 RUN corepack enable && corepack prepare pnpm@latest --activate
 WORKDIR /app
 
-# Copy workspace files needed for pnpm
-COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY package.json pnpm-workspace.yaml ./
 COPY .npmrc ./
 
 # Copy built artifacts
