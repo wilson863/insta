@@ -38,7 +38,7 @@ app.use("/api", router);
 const frontendPath = path.join(process.cwd(), "artifacts/insta-app/dist/public");
 app.use(express.static(frontendPath));
 
-app.get("*", (_req, res) => {
+app.get("/*splat", (_req, res) => {
   res.sendFile(path.join(frontendPath, "index.html"));
 });
 
