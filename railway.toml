@@ -1,6 +1,5 @@
 [build]
-builder = "dockerfile"
-dockerfilePath = "Dockerfile"
+builder = "nixpacks"
 
 [deploy]
 startCommand = "pnpm --filter @workspace/db run push && node artifacts/api-server/dist/index.mjs"
