@@ -1,5 +1,5 @@
 [phases.install]
-cmds = ["pnpm install"]
+cmds = ["pnpm install --no-frozen-lockfile"]
 
 [phases.build]
-cmds = ["pnpm install", "pnpm --filter @workspace/api-server run build", "BASE_PATH=/ PORT=3000 pnpm --filter @workspace/insta-app run build"]
+cmds = ["pnpm --filter @workspace/api-server run build", "BASE_PATH=/ PORT=3000 pnpm --filter @workspace/insta-app run build"]

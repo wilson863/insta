@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useLikePost, useUnlikePost, getGetPostQueryKey, getGetFeedQueryKey, getListPostsQueryKey, getGetUserPostsQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
-import type { Post } from "@workspace/api-client-react/src/generated/api.schemas";
+import type { Post } from "@workspace/api-client-react";
 import { cn } from "@/lib/utils";
 
 export function PostCard({ post, isDetail = false }: { post: Post; isDetail?: boolean }) {

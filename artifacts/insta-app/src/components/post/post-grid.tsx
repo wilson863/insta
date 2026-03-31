@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { Heart, MessageCircle } from "lucide-react";
-import type { Post } from "@workspace/api-client-react/src/generated/api.schemas";
+import type { Post } from "@workspace/api-client-react";
 
 export function PostGrid({ posts }: { posts: Post[] }) {
   return (
