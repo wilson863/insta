@@ -67,6 +67,17 @@ catalog:
 
 autoInstallPeers: false
 
+# Include both glibc and musl optional deps in the lockfile so it works
+# on both Replit (glibc) and Railway/Nixpacks (which may use musl).
+supportedArchitectures:
+  os:
+    - linux
+  cpu:
+    - x64
+  libc:
+    - glibc
+    - musl
+
 onlyBuiltDependencies:
   - '@swc/core'
   - esbuild
