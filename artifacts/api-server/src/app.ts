@@ -2,6 +2,8 @@ import express, { type Express } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import pinoHttp from "pino-http";
+import path from "path";
+import { createRequire } from "module";
 import router from "./routes";
 import { logger } from "./lib/logger";
 
@@ -32,5 +34,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(process.env.SESSION_SECRET));
 
 app.use("/api", router);
+
+const frontendPath = path.join(process.cwd(), "artifacts/insta-app/dist/public");
+app.use(express.static(frontendPath));
+
+app.get("*", (_req, res) => {
+  res.sendFile(path.join(frontendPath, "index.html"));
+});
 
 export default app;
