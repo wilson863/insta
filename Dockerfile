@@ -34,4 +34,4 @@ RUN BASE_PATH=/ PORT=3000 pnpm --filter @workspace/insta-app run build
 
 EXPOSE 8080
 
-CMD ["sh", "-c", "pnpm --filter @workspace/db run push && node artifacts/api-server/dist/index.mjs"]
+CMD ["sh", "-c", "(pnpm --filter @workspace/db run push || echo 'Warning: DB migration failed - set DATABASE_URL in Railway') && node artifacts/api-server/dist/index.mjs"]
