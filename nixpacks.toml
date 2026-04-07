@@ -1,3 +1,6 @@
+[phases.setup]
+aptPkgs = ["python3", "python3-pip"]
+
 [phases.install]
 cmds = ["pnpm install --no-frozen-lockfile"]
 
